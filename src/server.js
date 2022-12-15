@@ -1,15 +1,34 @@
+require("express-async-errors");
+
+const AppError = require("./utils/AppError");
+
 const express = require("express");
 
-const app = express();
-const PORT = 3333;
+const routes = require('./routes');
 
+const app = express();
+app.use(express.json());
+
+app.use(routes);
+
+app.use((error, request, response, next) => {
+    if(error instanceof AppError) {
+        response.status(error.statusCode).json({
+            status: "error",
+            message: error.message
+        });
+    }
+
+    console.log(error);
+    
+    response.status(500).json({
+        status: "error",
+        message: "Internal Server Error"
+    })
+})
+
+const PORT = 3333;
 app.listen(PORT, () => {
     console.log(`funcionando na porta ${PORT}`);
 });
 
-app.get("/movie", (request, response) => {
-    const { id } = request.query;
-    response.send(`
-    Id do Filme: ${id},
-    Filme: Ela dança, eu danço`);
-});
