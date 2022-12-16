@@ -54,15 +54,66 @@ class NotesControllers {
 
     async index(request, response) {
         const { title, user_id, tags } = request.query;
-
        
+        let notes;
+        if(tags !== undefined) {
+            if(title == undefined) {
+                const filterTags = tags.split(",").map(tag => tag.trim());
 
-           const notes = await knex("movieNotes")
-            .where({ user_id })
-            .whereLike("title", `%${title}%`)
-            .orderBy("title");
-       
-        return response.json(notes)
+                console.log("dbudd")
+                
+                notes = await knex("tags")
+                .select([
+                    "movieNotes.id",
+                    "movieNotes.title"
+                ])
+                .where("movieNotes.user_id", user_id)
+                .whereIn("name", filterTags)
+                .innerJoin("movieNotes", "movieNotes.id", "tags.note_id")
+
+            } else {
+
+                const filterTags = tags.split(",").map(tag => tag.trim());
+                
+                notes = await knex("tags")
+                .select([
+                    "movieNotes.id",
+                    "movieNotes.title",
+                    "movieNotes.rating"
+                ])
+                .where("movieNotes.user_id", user_id)
+                .whereLike("movieNotes.title", `%${title}%`)
+                .whereIn("name", filterTags)
+                .innerJoin("movieNotes", "movieNotes.id", "tags.note_id")
+                .orderBy("movieNotes.title");
+            }
+
+        } else {
+            console.log("dnv")
+           if(title === undefined) {
+                notes = await knex("movieNotes")
+                .where({ user_id })
+                .orderBy("title");
+           } else {
+            notes = await knex("movieNotes")
+                .where({ user_id })
+                .whereLike("movieNotes.title", `%${title}%`)
+                .orderBy("title");
+           }
+            
+        } 
+
+        const userTags = await knex("tags").where({ user_id });
+        const noteWithTags = notes.map(note => {
+            const noteTags = userTags.filter(tag => tag.note_id === note.id)
+            console.log(noteTags)
+            return {
+                ...note,
+                tags: noteTags
+            }
+        })
+        
+        response.json(noteWithTags)
     }
 }
 
