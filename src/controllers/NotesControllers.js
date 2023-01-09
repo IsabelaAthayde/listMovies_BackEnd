@@ -6,7 +6,7 @@ const AppError = require('../utils/AppError');
 class NotesControllers {
     async create(request, response) {
         const { title, description, rating, tags} = request.body;
-        const { user_id } = request.params;
+        const user_id = request.user.id;
 
         const database = await sqliteConnection();
         const movieNotesExists = await database.get("SELECT * FROM movieNotes WHERE title = (?) ", [title])
@@ -53,8 +53,9 @@ class NotesControllers {
     }
 
     async index(request, response) {
-        const { title, user_id, tags } = request.query;
-       
+        const { title, tags } = request.query;
+        const user_id = request.user.id;
+
         let notes;
         if(tags !== undefined) {
             if(title == undefined) {
