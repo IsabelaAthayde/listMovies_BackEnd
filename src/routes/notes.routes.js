@@ -2,9 +2,9 @@ const { Router } = require('express');
 
 const NotesControllers = require('../controllers/NotesControllers')
 
-const notesRoutes = Router();
-
 const notesControllers = new NotesControllers();
+
+const notesRoutes = Router();
 
 notesRoutes.get("/", notesControllers.index);
 notesRoutes.post("/:user_id", notesControllers.create);
