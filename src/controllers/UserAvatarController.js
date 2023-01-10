@@ -9,7 +9,8 @@ class UserAvatarController {
         
         const diskStorage = new DiskStorage();
 
-        const user = await knex("users").where({ id: user_id}).first();
+        const user = await knex("users")
+        .where({ id: user_id}).first();
         
         if(!user) {
             throw new AppError("Somente o usuário com permissão pode alterar o avatar");

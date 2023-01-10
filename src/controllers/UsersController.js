@@ -39,12 +39,12 @@ class UsersControllers {
         if(userEmail && userEmail.id !== user.id) {
             throw new AppError(`Esse email já está em uso`)
         }
-
+        console.log(user.password)
         user.name = name ?? user.name;
         user.email = email ?? user.email;
 
         if(password && !old_password) {
-            throw new AppError(`Digite a senha antiga para prosseguir.`);
+            throw new AppError(`Senha antiga não informada.`);
         }
 
         if(password && old_password) {

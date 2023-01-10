@@ -22,6 +22,7 @@ class DiskStorage {
         }
 
         await fs.promises.unlink(filePath);
+        console.log("deleted")
     }
 }
 
