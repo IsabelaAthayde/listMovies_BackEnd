@@ -23,19 +23,19 @@ database();
 
 app.use((error, request, response, next) => {
     if(error instanceof AppError) {
-        response.status(error.statusCode).json({
+        return response.status(error.statusCode).json({
             status: "error",
             message: error.message
         });
     }
 
-    console.log(error);
+    console.error(error);
 
-    response.status(500).json({
+    return response.status(500).json({
         status: "error",
         message: "Internal Server Error"
-    })
-})
+    });
+});
 
 const PORT = process.env.PORT || 3333;
 app.listen(PORT, () => {
